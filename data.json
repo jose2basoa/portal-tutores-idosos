@@ -1,0 +1,36 @@
+{
+  "tutors": {
+    "1763564967071_lu7civdez1k": {
+      "id": "1763564967071_lu7civdez1k",
+      "email": "jose.de.barros0192@gmail.com",
+      "nome": "Jose",
+      "documento": "59940754850",
+      "idade": 20,
+      "endereco": {
+        "rua": "BENJAMIN CONSTANT",
+        "numero": "433",
+        "bairro": "Centro",
+        "cidade": "Guararapes",
+        "estado": "SP",
+        "cep": "16700000"
+      },
+      "contatosEmergencia": [
+        {
+          "id": "1763564936556_zy68bhj926m",
+          "nome": "JOSE GUILHERME BASOA CARDOSO",
+          "telefone": "18981958537"
+        }
+      ],
+      "foto": "",
+      "createdAt": "2025-11-19T15:09:27.071Z",
+      "updatedAt": "2025-11-19T15:09:27.071Z"
+    }
+  },
+  "credentials": {
+    "jose.de.barros0192@gmail.com": {
+      "email": "jose.de.barros0192@gmail.com",
+      "senha": "123456",
+      "userId": "1763564967071_lu7civdez1k"
+    }
+  }
+}

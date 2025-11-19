@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { email, senha } = await request.json()
 
-    // Valida campos
     if (!email || !senha) {
       return NextResponse.json(
         { success: false, error: 'Email e senha são obrigatórios' },
@@ -17,9 +16,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verifica credenciais
     const userId = checkCredentials(email, senha)
-    
+
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'Credenciais inválidas' },
@@ -27,15 +25,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Carrega dados do tutor
     const tutor = loadTutor(userId)
 
     return NextResponse.json({
       success: true,
       user: {
         id: userId,
-        email,
-        tutor
+        email
       },
       tutor
     })

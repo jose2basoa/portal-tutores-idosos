@@ -83,60 +83,85 @@ export default function IdosoPage() {
     }
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    try {
-      const idosoData: Partial<Idoso> = {
-        nome: formData.nome,
-        idade: parseInt(formData.idade),
-        altura: parseInt(formData.altura),
-        doencas: formData.doencas,
-        condicaoAtual: formData.condicaoAtual,
-        temPlanoSaude: formData.temPlanoSaude,
-        planoSaude: formData.temPlanoSaude ? formData.planoSaude : undefined,
-        numeroSUS: formData.numeroSUS,
-        medicacoes: formData.medicacoes,
-        exames: formData.exames
-      }
-
-      if (idoso) {
-        // Atualiza idoso existente
-        const response = await fetch('/api/idoso', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...idosoData, id: idoso.id })
-        })
-
-        if (response.ok) {
-          toast.success('Dados atualizados com sucesso!')
-          const data = await response.json()
-          localStorage.setItem('idoso_data', JSON.stringify(data.data))
-          setIdoso(data.data)
-        }
-      } else {
-        // Cria novo idoso
-        const response = await fetch('/api/idoso', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...idosoData, tutorId: user?.id })
-        })
-
-        if (response.ok) {
-          toast.success('Idoso cadastrado com sucesso!')
-          const data = await response.json()
-          localStorage.setItem('idoso_data', JSON.stringify(data.data))
-          setIdoso(data.data)
-          router.push('/dashboard')
-        }
-      }
-    } catch (error) {
-      toast.error('Erro ao salvar dados')
-    } finally {
-      setLoading(false)
-    }
+  const validarDados = () => {
+  if (!formData.nome.trim()) {
+    toast.error("O nome é obrigatório.")
+    return false
   }
+  if (!formData.idade || Number(formData.idade) <= 0) {
+    toast.error("Idade inválida.")
+    return false
+  }
+  if (!formData.altura || Number(formData.altura) <= 0) {
+    toast.error("Altura inválida.")
+    return false
+  }
+  return true
+}
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+
+  // --- validação ---
+  if (!validarDados()) return
+
+  setLoading(true)
+
+  try {
+    const idosoData: Partial<Idoso> = {
+      nome: formData.nome,
+      idade: parseInt(formData.idade),
+      altura: parseInt(formData.altura),
+      doencas: formData.doencas,
+      condicaoAtual: formData.condicaoAtual,
+      temPlanoSaude: formData.temPlanoSaude,
+      planoSaude: formData.temPlanoSaude ? formData.planoSaude : undefined,
+      numeroSUS: formData.numeroSUS,
+      medicacoes: formData.medicacoes,
+      exames: formData.exames
+    }
+
+    let response
+
+    if (idoso) {
+      response = await fetch('/api/idoso', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...idosoData, id: idoso.id })
+      })
+
+      if (response.ok) {
+        toast.success('Dados atualizados com sucesso!')
+      }
+    } else {
+      response = await fetch('/api/idoso', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...idosoData, tutorId: user?.id })
+      })
+
+      if (response.ok) {
+        toast.success('Idoso cadastrado com sucesso!')
+      }
+    }
+
+    if (response && response.ok) {
+      const data = await response.json()
+      localStorage.setItem('idoso_data', JSON.stringify(data.data))
+      setIdoso(data.data)
+
+      // --- redireciona SEMPRE após salvar ---
+      router.push('/dashboard')
+    }
+
+
+  } catch (error) {
+    toast.error('Erro ao salvar dados')
+  } finally {
+    setLoading(false)
+  }
+}
+
 
   // Funções para gerenciar doenças
   const addDoenca = () => {
@@ -564,29 +589,32 @@ export default function IdosoPage() {
 
           {/* Botão Salvar */}
           <div className="mt-8 flex gap-4">
-            <Link href="/dashboard" className="flex-1">
-              <Button type="button" variant="outline" className="w-full h-12">
-                Cancelar
-              </Button>
-            </Link>
-            <Button
-              type="submit"
-              className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="w-5 h-5 mr-2" />
-                  Salvar Dados
-                </>
-              )}
-            </Button>
-          </div>
+  <Link href="/dashboard" className="flex-1">
+    <Button type="button" variant="outline" className="w-full h-12">
+      Cancelar
+    </Button>
+  </Link>
+
+  <Button
+    type="submit"
+    className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+    disabled={loading}
+  >
+    {loading ? (
+      <>
+        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+        Salvando...
+      </>
+    ) : (
+      <>
+        <Save className="w-5 h-5 mr-2" />
+        Salvar Dados
+      </>
+    )}
+  </Button>
+</div>
+
+
         </form>
       </main>
     </div>

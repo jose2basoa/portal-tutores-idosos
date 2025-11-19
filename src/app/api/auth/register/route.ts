@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
   try {
     const { email, senha, tutorData } = await request.json()
 
-    // Valida campos obrigatórios
     if (!email || !senha || !tutorData) {
       return NextResponse.json(
         { success: false, error: 'Dados incompletos' },
@@ -18,10 +17,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Gera ID único
     const userId = generateId()
 
-    // Cria objeto tutor completo
     const tutor: Tutor = {
       id: userId,
       email,
@@ -37,12 +34,11 @@ export async function POST(request: NextRequest) {
         cep: ''
       },
       contatosEmergencia: tutorData.contatosEmergencia || [],
-      foto: tutorData.foto,
+      foto: tutorData.foto || '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
 
-    // Salva tutor e credenciais
     saveTutor(tutor)
     saveUserCredentials(email, senha, userId)
 
@@ -50,16 +46,15 @@ export async function POST(request: NextRequest) {
       success: true,
       user: {
         id: userId,
-        email,
-        tutor
+        email
       },
       tutor,
       message: 'Conta criada com sucesso!'
     })
-  } catch (error) {
-    console.error('Erro no registro:', error)
+    } catch (error: any) {
+    console.error('Erro no registro (detalhes):', error?.message || error)
     return NextResponse.json(
-      { success: false, error: 'Erro ao criar conta' },
+      { success: false, error: 'Erro ao criar conta', detalhes: String(error) },
       { status: 500 }
     )
   }
