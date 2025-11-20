@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateId, saveEvento, loadEventosByTutor, markEventoAsRead } from '@/lib/storage'
 import { Evento } from '@/lib/types'
+import * as storage from "@/lib/storage";
 
 /**
  * GET: Busca eventos de um tutor
@@ -22,11 +23,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const eventos = loadEventosByTutor(tutorId)
+    const eventos = await loadEventosByTutor(tutorId)
 
     return NextResponse.json({
       success: true,
-      data: eventos
+      data: Array.isArray(eventos) ? eventos : []
     })
   } catch (error) {
     console.error('Erro ao buscar eventos:', error)
@@ -44,7 +45,6 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
 
-    // Valida campos obrigatórios
     if (!data.tutorId || !data.idosoId || !data.tipo) {
       return NextResponse.json(
         { success: false, error: 'Dados incompletos' },
@@ -52,8 +52,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const id = await generateId()
+
     const evento: Evento = {
-      id: generateId(),
+      id,
       tutorId: data.tutorId,
       idosoId: data.idosoId,
       tipo: data.tipo,
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
       lido: false
     }
 
-    saveEvento(evento)
+    await saveEvento(evento)
 
     return NextResponse.json({
       success: true,
@@ -95,7 +97,7 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    markEventoAsRead(eventoId, tutorId)
+    await markEventoAsRead(eventoId, tutorId)
 
     return NextResponse.json({
       success: true,

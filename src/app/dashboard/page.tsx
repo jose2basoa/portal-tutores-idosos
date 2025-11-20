@@ -154,8 +154,8 @@ export default function DashboardPage() {
 
         {/* Informações do Idoso */}
         {idoso ? (
-          <Card className="mb-8 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+          <Card className="mb-8 shadow-lg p-0">
+            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-[10px] pt-1">
               <CardTitle className="flex items-center gap-2">
                 <User className="w-6 h-6" />
                 {idoso.nome}

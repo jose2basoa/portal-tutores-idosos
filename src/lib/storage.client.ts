@@ -1,27 +1,62 @@
-// storage.client.ts
-import { Tutor } from "./types";
+import { Idoso, Evento, User } from "./types";
 
-export function saveTutor(tutor: Tutor): void {
-  localStorage.setItem(`tutor_${tutor.id}`, JSON.stringify(tutor));
-  localStorage.setItem("tutor_data", JSON.stringify(tutor));
+// ----------------------------
+// IDOSOS
+// ----------------------------
+export async function saveIdoso(idoso: Idoso) {
+  localStorage.setItem(`idoso_${idoso.id}`, JSON.stringify(idoso));
 }
 
-export function loadTutor(id: string) {
-  const data = localStorage.getItem(`tutor_${id}`);
+export async function loadIdoso(id: string): Promise<Idoso | null> {
+  const data = localStorage.getItem(`idoso_${id}`);
   return data ? JSON.parse(data) : null;
 }
 
-export function saveUserCredentials(email: string, senha: string, userId: string) {
-  localStorage.setItem(`credentials_${email}`, JSON.stringify({ email, senha, userId }));
+export async function loadIdososByTutor(tutorId: string): Promise<Idoso[]> {
+  const keys = Object.keys(localStorage);
+  const idosos: Idoso[] = [];
+  for (const key of keys) {
+    if (key.startsWith("idoso_")) {
+      const obj = JSON.parse(localStorage.getItem(key) as string);
+      if (obj.tutorId === tutorId) idosos.push(obj);
+    }
+  }
+  return idosos;
 }
 
-export function checkCredentials(email: string, senha: string): string | null {
-  const data = localStorage.getItem(`credentials_${email}`);
-  if (!data) return null;
-  const cred = JSON.parse(data);
-  return cred.senha === senha ? cred.userId : null;
+// ----------------------------
+// IDs
+// ----------------------------
+export async function generateId(): Promise<string> {
+  return crypto.randomUUID?.() || Math.random().toString(36).slice(2, 12);
 }
 
-export function generateId(): string {
-  return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+// ----------------------------
+// Eventos
+// ----------------------------
+export async function saveEvento(evento: Evento) {
+  const eventos = JSON.parse(localStorage.getItem("eventos") || "[]");
+  eventos.push(evento);
+  localStorage.setItem("eventos", JSON.stringify(eventos));
+}
+
+export async function loadEventosByTutor(tutorId: string): Promise<Evento[]> {
+  const eventos = JSON.parse(localStorage.getItem("eventos") || "[]");
+  return eventos.filter((e: Evento) => e.tutorId === tutorId);
+}
+
+export async function markEventoAsRead(eventoId: string) {
+  const eventos = JSON.parse(localStorage.getItem("eventos") || "[]");
+  const evento = eventos.find((e: Evento) => e.id === eventoId);
+  if (evento) evento.lido = true;
+  localStorage.setItem("eventos", JSON.stringify(eventos));
+}
+
+// ----------------------------
+// Usuários / Login
+// ----------------------------
+export async function saveUserCredentials(user: User) {
+  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  users.push(user);
+  localStorage.setItem("users", JSON.stringify(users));
 }

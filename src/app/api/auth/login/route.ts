@@ -1,9 +1,5 @@
-// ============================================
-// API: Login
-// ============================================
-
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCredentials, loadTutor } from '@/lib/storage'
+import { checkCredentials, loadTutor } from '@/lib/storage.server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,23 +12,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const userId = checkCredentials(email, senha)
+    const user = await checkCredentials(email, senha) // await porque é async
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json(
         { success: false, error: 'Credenciais inválidas' },
         { status: 401 }
       )
     }
 
-    const tutor = loadTutor(userId)
+    const tutor = await loadTutor(user.id)
 
     return NextResponse.json({
       success: true,
-      user: {
-        id: userId,
-        email
-      },
+      user: { id: user.id, email: user.email },
       tutor
     })
   } catch (error) {

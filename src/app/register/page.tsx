@@ -39,10 +39,10 @@ export default function RegisterPage() {
       cep: ''
     },
     contatosEmergencia: [
-      { id: generateId(), nome: '', telefone: '' },
-      { id: generateId(), nome: '', telefone: '' },
-      { id: generateId(), nome: '', telefone: '' }
-    ] as ContatoEmergencia[]
+      { id: crypto.randomUUID(), nome: '', telefone: '' },
+      { id: crypto.randomUUID(), nome: '', telefone: '' },
+      { id: crypto.randomUUID(), nome: '', telefone: '' }
+    ]    
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,10 +88,11 @@ export default function RegisterPage() {
       ...formData,
       contatosEmergencia: [
         ...formData.contatosEmergencia,
-        { id: generateId(), nome: '', telefone: '' }
+        { id: crypto.randomUUID(), nome: '', telefone: '' }
       ]
     })
   }
+  
 
   const removeContato = (index: number) => {
     const novosContatos = formData.contatosEmergencia.filter((_, i) => i !== index)

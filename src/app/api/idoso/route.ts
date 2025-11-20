@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateId, saveIdoso, loadIdoso, loadIdososByTutor } from '@/lib/storage'
 import { Idoso } from '@/lib/types'
+import * as storage from "@/lib/storage";
 
 /**
  * GET: Busca idoso(s)
