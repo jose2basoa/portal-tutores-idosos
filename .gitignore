@@ -16,3 +16,5 @@ node_modules
 /pnpm-debug.log*
 
 .next
+
+data.json
